@@ -25,8 +25,11 @@ class CafeFactory extends Factory
             'has_wifi' => fake()->boolean(),
             'rating' => fake()->randomFloat(2, 3, 5),
             'image_path' => 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&q=80&w=800',
+            'tagline' => fake()->sentence(3),
+            'instagram_url' => 'https://instagram.com/wadahngopi',
+            'tiktok_url' => 'https://tiktok.com/@wadahngopi',
+            'established_year' => fake()->year(),
             'status' => 'published',
-            'total_energy' => 0,
         ];
     }
 }

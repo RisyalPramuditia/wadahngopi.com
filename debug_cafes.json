@@ -1,0 +1,74 @@
+[
+    {
+        "name": "Coffee & Co. - SOUL",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Fren.co Coffee & Eatery",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Kolektif Coffee",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Dunamos Coffee",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1509042239860-f550ce710b93?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "satukata coffee co.",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1511920170033-f8396924c348?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Titik Koma Antasari",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1442111556602-4503f252d6a3?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Toko Kopi Maru",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1498804103079-a6351b050096?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Dua Lima Coffee",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1497933321188-941f9ad36b12?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Kopi Botol Alaya",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "YOU Coffee",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Starbucks Big Mall",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1453614512568-c4024d13c247?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    },
+    {
+        "name": "Kopi Bahagia",
+        "image_path": "https:\/\/images.unsplash.com\/photo-1497515114629-f71d768fd07c?auto=format&fit=crop&q=80&w=800",
+        "images": null,
+        "status": "published"
+    }
+]

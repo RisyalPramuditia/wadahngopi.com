@@ -27,12 +27,14 @@ class CafePolicy
 
     public function update(User $user, Cafe $cafe): bool
     {
-        return $user->role === 'admin' || $user->id === $cafe->owner_id;
+        // Only cafe owner can update - admin cannot edit cafe content
+        return $user->id === $cafe->owner_id;
     }
 
     public function delete(User $user, Cafe $cafe): bool
     {
-        return $user->role === 'admin';
+        // Only cafe owner can delete - admin cannot delete cafes
+        return $user->id === $cafe->owner_id;
     }
 
     public function restore(User $user, Cafe $cafe): bool

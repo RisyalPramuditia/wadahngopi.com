@@ -1,22 +1,61 @@
 {
-    "name": "WadahNgopi",
+    "name": "WadahNgopi Kalimantan",
     "short_name": "WadahNgopi",
+    "description": "Portal cari spot ngopi estetik & UMKM lokal terbaik di Kalimantan.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#F9F5F0",
-    "theme_color": "#6F4E37",
+    "background_color": "#FFFDFB",
+    "theme_color": "#C16B05",
     "orientation": "portrait",
-    "description": "Tempat ngopi terdekat dan terrekomendasi",
+    "categories": [
+        "news",
+        "food",
+        "lifestyle"
+    ],
     "icons": [
         {
             "src": "/icons/icon-192x192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
             "src": "/icons/icon-512x512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Cari Cafe",
+            "short_name": "Explore",
+            "description": "Cari spot ngopi di sekitarmu",
+            "url": "/explore",
+            "icons": [
+                {
+                    "src": "/icons/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Warta Kopi",
+            "short_name": "Info",
+            "description": "Baca berita kopi terbaru",
+            "url": "/information",
+            "icons": [
+                {
+                    "src": "/icons/icon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
         }
     ]
 }

@@ -4,11 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CafeResource\Pages;
 use App\Models\Cafe;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CafeResource extends Resource
 {
@@ -16,106 +18,133 @@ class CafeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
+    protected static ?string $navigationGroup = 'Manajemen Cafe';
+
+    protected static ?int $navigationSort = 1;
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // SECTION: ADMIN CONTROL (Structural) - Hidden from Owner
-                Forms\Components\Section::make('Admin Control')
-                    ->description('Hanya Admin yang bisa mengatur ini.')
+                Forms\Components\Section::make('Informasi Cafe')
                     ->schema([
-                        Forms\Components\Select::make('owner_id')
-                            ->relationship('owner', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->label('Pemilik Cafe')
-                            ->required(),
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nama Cafe')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Forms\Set $set, ?string $state) {
+                                if ($state) {
+                                    $emailPrefix = str($state)->slug('')->toString();
+                                    $set('owner_email', $emailPrefix . '@wadahngopi.test');
+                                    $set('owner_name', 'Owner ' . $state);
+                                    $set('owner_password', 'password'); // Default password for ease of use
+                                }
+                            }),
+                        Forms\Components\TextInput::make('tagline')
+                            ->label('Tagline')
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('description')
+                            ->label('Deskripsi')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('address')
+                            ->label('Alamat')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                    ])->columns(2),
 
+                Forms\Components\Section::make('Akun Owner')
+                    ->schema([
+                        Forms\Components\TextInput::make('owner_name')
+                            ->label('Nama Owner')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('owner_email')
+                            ->label('Email Owner')
+                            ->email()
+                            ->required()
+                            ->unique(User::class, 'email')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('owner_password')
+                            ->label('Password Owner')
+                            ->password()
+                            ->required()
+                            ->minLength(8)
+                            ->maxLength(255)
+                            ->revealable(),
+                    ])
+                    ->columns(3)
+                    ->visible(fn ($livewire) => $livewire instanceof Pages\CreateCafe),
+
+                Forms\Components\Section::make('Kontak & Social Media')
+                    ->schema([
+                        Forms\Components\TextInput::make('whatsapp_number')
+                            ->label('WhatsApp')
+                            ->tel()
+                            ->maxLength(20),
+                        Forms\Components\TextInput::make('instagram_url')
+                            ->label('Instagram URL')
+                            ->url()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('tiktok_url')
+                            ->label('TikTok URL')
+                            ->url()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('google_maps_url')
+                            ->label('Google Maps URL')
+                            ->url()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                    ])->columns(3),
+
+                Forms\Components\Section::make('Lokasi')
+                    ->schema([
+                        Forms\Components\TextInput::make('latitude')
+                            ->label('Latitude')
+                            ->numeric()
+                            ->step(0.000001),
+                        Forms\Components\TextInput::make('longitude')
+                            ->label('Longitude')
+                            ->numeric()
+                            ->step(0.000001),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Media')
+                    ->schema([
+                        Forms\Components\FileUpload::make('image_path')
+                            ->label('Foto Utama')
+                            ->image()
+                            ->directory('cafes')
+                            ->maxSize(2048),
+                        Forms\Components\FileUpload::make('menu_image_path')
+                            ->label('Foto Menu')
+                            ->image()
+                            ->directory('cafes/menus')
+                            ->maxSize(2048),
+                    ])->columns(2),
+
+                Forms\Components\Section::make('Pengaturan')
+                    ->schema([
                         Forms\Components\Select::make('status')
                             ->options([
                                 'draft' => 'Draft',
-                                'review' => 'Under Review',
                                 'published' => 'Published',
+                                'banned' => 'Banned',
                             ])
                             ->default('draft')
                             ->required(),
-
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255)
-                            ->label('Nama Cafe'),
-
+                        Forms\Components\Toggle::make('has_wifi')
+                            ->label('WiFi Tersedia')
+                            ->default(false),
                         Forms\Components\TextInput::make('rating')
                             ->numeric()
-                            ->step(0.1)
                             ->minValue(0)
                             ->maxValue(5)
-                            ->label('Rating (Manual)'),
-                    ])
-                    ->columns(2)
-                    ->visible(fn () => auth()->user()->role === 'admin'),
-
-                // SECTION: OWNER CONTENT (Content) - Hidden from Admin
-                Forms\Components\Section::make('Informasi Cafe')
-                    ->description('Kelola detail cafe Anda di sini.')
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255)
-                            ->readOnly() // Owner cannot change name provided by Admin
-                            ->label('Nama Cafe'),
-
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'review' => 'Ajukan Review',
-                                'published' => 'Publish Sekarang',
-                            ])
-                            ->label('Status Publikasi'),
-
-                        Forms\Components\Textarea::make('description')
-                            ->label('Deskripsi')
-                            ->columnSpanFull(),
-
-                        Forms\Components\FileUpload::make('image_path')
-                            ->image()
-                            ->directory('cafes')
-                            ->visibility('public')
-                            ->label('Gambar Utama (Cover)'),
-
-                        Forms\Components\FileUpload::make('images')
-                            ->image()
-                            ->multiple()
-                            ->maxFiles(5)
-                            ->directory('cafes/gallery')
-                            ->visibility('public')
-                            ->label('Galeri Gambar (Max 5)')
-                            ->reorderable()
-                            ->columnSpanFull(),
-
-                        Forms\Components\Section::make('Lokasi & Kontak')
-                            ->schema([
-                                Forms\Components\Textarea::make('address')
-                                    ->required()
-                                    ->label('Alamat Lengkap')
-                                    ->columnSpanFull(),
-                                Forms\Components\TextInput::make('google_maps_url')
-                                    ->url()
-                                    ->label('Link Google Maps'),
-                                Forms\Components\TextInput::make('whatsapp_number')
-                                    ->tel()
-                                    ->label('Nomor WhatsApp'),
-                            ])->columns(2),
-
-                        Forms\Components\Section::make('Jam Operasional & Koordinat')
-                            ->schema([
-                                Forms\Components\TimePicker::make('opening_time')->label('Buka'),
-                                Forms\Components\TimePicker::make('closing_time')->label('Tutup'),
-                                Forms\Components\TextInput::make('latitude')->numeric(),
-                                Forms\Components\TextInput::make('longitude')->numeric(),
-                            ])->columns(2),
-
-                    ])
-                    ->visible(fn () => auth()->user()->role !== 'admin'),
+                            ->step(0.1)
+                            ->default(0),
+                    ])->columns(3),
             ]);
     }
 
@@ -125,52 +154,67 @@ class CafeResource extends Resource
             ->columns([
                 Tables\Columns\ImageColumn::make('image_path')
                     ->label('Foto')
-                    ->visible(fn () => auth()->user()->role !== 'admin'), // Admin might not care about photo
-
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Cafe')
                     ->searchable()
-                    ->sortable()
-                    ->label('Nama Cafe'),
-
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('owner.name')
                     ->label('Owner')
-                    ->visible(fn () => auth()->user()->role === 'admin'),
-
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Alamat')
+                    ->searchable()
+                    ->limit(30),
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
-                        'gray' => 'draft',
-                        'warning' => 'review',
+                        'secondary' => 'draft',
                         'success' => 'published',
-                    ])
-                    ->sortable(),
-
+                        'danger' => 'banned',
+                    ]),
+                Tables\Columns\IconColumn::make('has_wifi')
+                    ->label('WiFi')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('rating')
-                    ->numeric()
                     ->sortable()
-                    ->visible(fn () => auth()->user()->role === 'admin'), // Only Admin cares about managing rating
+                    ->formatStateUsing(fn ($state) => number_format($state, 1)),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                        'banned' => 'Banned',
+                    ]),
+                Tables\Filters\TernaryFilter::make('has_wifi')
+                    ->label('WiFi'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
-    }
+            ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $user = auth()->user();
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
-    {
-        $query = parent::getEloquentQuery();
+                // Owner only sees their own cafes
+                if ($user->role === 'owner') {
+                    $query->where('owner_id', $user->id);
+                }
 
-        if (auth()->user()->role !== 'admin') {
-            $query->where('owner_id', auth()->id());
-        }
-
-        return $query;
+                // Admin sees all cafes
+                return $query;
+            });
     }
 
     public static function getRelations(): array
@@ -185,7 +229,13 @@ class CafeResource extends Resource
         return [
             'index' => Pages\ListCafes::route('/'),
             'create' => Pages\CreateCafe::route('/create'),
+            'view' => Pages\ViewCafe::route('/{record}'),
             'edit' => Pages\EditCafe::route('/{record}/edit'),
         ];
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'admin' && filament()->getPanel()->getId() === 'admin';
     }
 }

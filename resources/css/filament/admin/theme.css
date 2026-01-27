@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@source "../../../../vendor/filament/**/*.blade.php";
+@source "../../../../vendor/filament-panels/**/*.blade.php";
+@source "../../../../vendor/filament-widgets/**/*.blade.php";
+@source "../../../../vendor/filament-forms/**/*.blade.php";
+@source "../../../../vendor/filament-tables/**/*.blade.php";
+@source "../../../../vendor/filament-actions/**/*.blade.php";
+@source "../../../../vendor/filament-notifications/**/*.blade.php";
+
+/* WadahNgopi Admin Theme */
+:root {
+    --sidebar-width: 16rem;
+}
+
+/* Custom branding for login page */
+.fi-simple-layout {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+/* Logo styling */
+.fi-logo img {
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+/* Navigation styling */
+.fi-sidebar-nav {
+    font-weight: 600;
+}
+
+.fi-sidebar-item-button {
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.fi-sidebar-item-button:hover {
+    transform: translateX(4px);
+}
+
+/* Card styling */
+.fi-section {
+    border-radius: 16px;
+}
+
+/* Button styling */
+.fi-btn-primary {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.fi-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+}

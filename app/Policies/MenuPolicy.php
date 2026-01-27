@@ -37,7 +37,7 @@ class MenuPolicy
             return false;
         }
 
-        return $user->role === 'user' && $user->cafes()->exists();
+        return $user->role === 'owner' && $user->cafes()->exists();
     }
 
     public function update(User $user, Menu $menu): bool

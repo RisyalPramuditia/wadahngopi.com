@@ -16,6 +16,15 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    protected static ?string $navigationGroup = 'Pengaturan';
+
+    protected static ?int $navigationSort = 1;
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'admin' && filament()->getPanel()->getId() === 'admin';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -36,7 +45,8 @@ class UserResource extends Resource
                 Forms\Components\Select::make('role')
                     ->options([
                         'admin' => 'Admin',
-                        'user' => 'Owner',
+                        'owner' => 'Owner',
+                        'user' => 'User',
                     ])
                     ->required()
                     ->default('user'),
@@ -56,7 +66,9 @@ class UserResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'danger',
+                        'owner' => 'warning',
                         'user' => 'success',
+                        default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

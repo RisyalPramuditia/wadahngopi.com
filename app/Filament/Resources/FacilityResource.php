@@ -15,24 +15,28 @@ class FacilityResource extends Resource
 {
     protected static ?string $model = Facility::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+
+    protected static ?string $navigationGroup = 'Pengaturan';
+
+    protected static ?int $navigationSort = 2;
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'admin' && filament()->getPanel()->getId() === 'admin';
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                // Auto-fill cafe_id with the logged-in Owner's cafe
-                Forms\Components\Hidden::make('cafe_id')
-                    ->default(fn () => auth()->user()->cafes()->first()?->id)
-                    ->required(),
-
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('icon')
-                    ->placeholder('bi-wifi')
+                    ->placeholder('ph-fill ph-wifi-high')
                     ->maxLength(255)
-                    ->helperText('Gunakan class icon Bootstrap Icons, misal: bi-wifi, bi-cup-hot'),
+                    ->helperText('Gunakan class icon Phosphor, misal: ph-fill ph-wifi-high, ph-fill ph-air-conditioning'),
             ]);
     }
 
@@ -41,13 +45,15 @@ class FacilityResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
-                Tables\Columns\TextColumn::make('icon'),
+                Tables\Columns\TextColumn::make('icon')
+                    ->formatStateUsing(fn ($state) => $state ? "($state)" : '-'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -62,7 +68,7 @@ class FacilityResource extends Resource
 
         if (auth()->user()->role !== 'admin') {
             // Only show facilities belonging to the Owner's cafe
-            $query->whereHas('cafe', function (Builder $q) {
+            $query->whereHas('cafes', function (Builder $q) {
                 $q->where('owner_id', auth()->id());
             });
         }
