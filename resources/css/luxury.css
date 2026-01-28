@@ -27,6 +27,10 @@
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    /* Professional Gesture Handling */
+    touch-action: pan-y;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .bottom-nav {

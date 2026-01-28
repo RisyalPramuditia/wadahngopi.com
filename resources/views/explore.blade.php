@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Explore - WadahNgopi.Com')
+@section('title', 'Jelajah - WadahNgopi.Com')
 
 @section('content')
     <div x-data="exploreLogic()" x-init="initComponent()" class="min-h-screen bg-[--color-cream] relative overflow-hidden">
@@ -13,41 +13,78 @@
             <div class="flex items-center justify-between gap-4 mb-8">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl overflow-hidden p-1 bg-white shadow-premium border border-slate-50">
-                        <img src="{{ asset('images/logo-brand.jpg') }}" alt="WadahNgopi Logo" class="w-full h-full object-cover">
+                        <img src="{{ asset('images/logo-brand.jpg') }}" alt="WadahNgopi Logo"
+                            class="w-full h-full object-cover">
                     </div>
                     <h1 class="text-xl font-black text-[--color-espresso] font-display">
                         Wadah<span class="text-[--color-amber]">Ngopi</span>
                     </h1>
                 </div>
 
-                {{-- A-Z Alphabetical Filter --}}
+                {{-- Feature Guide Indicator (Simple & Pro) --}}
                 <div class="flex items-center gap-2">
-                    <button @click="sortAz = !sortAz" 
-                        class="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white shadow-soft border border-slate-50 rounded-xl transition-all duration-300"
-                        :class="sortAz ? 'border-[--color-amber] text-[--color-amber]' : 'text-slate-300'">
-                        <span class="text-[0.55rem] font-black tracking-tighter uppercase">Aa</span>
-                        <span class="text-[0.58rem] font-bold uppercase tracking-widest">A-Z</span>
-                    </button>
+                    <span class="w-2 h-2 rounded-full bg-[--color-amber] animate-pulse"></span>
+                    <span class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Live Explore</span>
                 </div>
             </div>
 
             <div class="search-luxury-box mb-6">
                 <i class="ph-bold ph-magnifying-glass text-[--color-amber] text-lg"></i>
-                <input type="text" x-model="search" placeholder="Cari café idamanmu..." @keyup.escape="search = ''" class="font-display">
+                <input type="text" x-model="search" placeholder="Cari café idamanmu..." @keyup.escape="search = ''"
+                    class="font-display">
             </div>
 
-            <div class="flex items-center gap-2 overflow-visible">
-                <div class="pills-container-luxury flex-1 overflow-x-auto no-scrollbar py-2">
-                    <button class="pill-luxury" :class="activeFilter === 'semua' ? 'active' : ''"
-                        @click="activeFilter = 'semua'">Semua</button>
-                    <button class="pill-luxury" :class="activeFilter === 'terdekat' ? 'active' : ''"
-                        @click="activeFilter = 'terdekat'; getLocation()">
+            {{-- Professional Horizontal Filter Bar --}}
+            <div class="relative">
+                <div class="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 -mx-2 px-2 snap-x" data-no-swipe>
+                    <button @click="activeFilter = 'semua'; selectedLetter = null"
+                        class="flex-shrink-0 px-6 py-2.5 rounded-full text-[0.65rem] font-black uppercase tracking-widest transition-all active:scale-95 snap-start shadow-sm"
+                        :class="activeFilter === 'semua' && !selectedLetter ? 'bg-[--color-espresso] text-white' : 'bg-white text-slate-400 border border-gray-100'">
+                        Semua
+                    </button>
+
+                    <button @click="activeFilter = 'terdekat'; getLocation(); selectedLetter = null"
+                        class="flex-shrink-0 px-5 py-2.5 rounded-full text-[0.65rem] font-black uppercase tracking-widest transition-all active:scale-95 snap-start flex items-center gap-2 shadow-sm"
+                        :class="activeFilter === 'terdekat' ? 'bg-[--color-espresso] text-white' : 'bg-white text-slate-400 border border-gray-100'">
                         <i class="ph-bold ph-map-pin" x-show="!isLocating"></i>
                         <i class="ph-bold ph-circle-notch animate-spin" x-show="isLocating"></i>
                         <span>Terdekat</span>
                     </button>
-                    <button class="pill-luxury" :class="activeFilter === 'buka' ? 'active' : ''"
-                        @click="activeFilter = 'buka'">Buka</button>
+
+                    <button @click="activeFilter = 'buka'; selectedLetter = null"
+                        class="flex-shrink-0 px-6 py-2.5 rounded-full text-[0.65rem] font-black uppercase tracking-widest transition-all active:scale-95 snap-start shadow-sm"
+                        :class="activeFilter === 'buka' ? 'bg-[--color-espresso] text-white' : 'bg-white text-slate-400 border border-gray-100'">
+                        Buka
+                    </button>
+
+                    {{-- A-Z Integration - Multi-Select Minimalist --}}
+                    <div class="flex-shrink-0">
+                        <button
+                            @click="activeFilter = (activeFilter === 'az' && selectedLetters.length === 0) ? 'semua' : 'az'"
+                            class="px-5 py-2.5 rounded-full text-[0.65rem] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2 shadow-sm"
+                            :class="(activeFilter === 'az' || selectedLetters.length > 0) ? 'bg-[--color-espresso] text-white' : 'bg-white text-slate-400 border border-gray-100'">
+                            <i class="ph-bold ph-sort-ascending text-lg"></i>
+                            <span
+                                x-text="selectedLetters.length > 0 ? 'Abjad (' + selectedLetters.length + ')' : 'A-Z'"></span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Global Alphabet Navigator (Multi-Select Minimalist) --}}
+                <div x-show="activeFilter === 'az'" x-transition:enter="transition duration-400 ease-out"
+                    x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                    class="mt-4 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 snap-x" data-no-swipe>
+                    <button @click="selectedLetters = []; activeFilter = 'semua'"
+                        class="flex-shrink-0 w-8 h-8 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center transition-all active:scale-90 snap-start shadow-sm">
+                        <i class="ph-bold ph-x text-[0.7rem]"></i>
+                    </button>
+
+                    <template x-for="char in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')" :key="char">
+                        <button @click="toggleLetter(char)"
+                            class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[0.6rem] font-black transition-all active:scale-95 snap-center shadow-sm border"
+                            :class="selectedLetters.includes(char) ? 'bg-[--color-amber] text-white border-transparent' : 'bg-white text-slate-400 border-slate-50'"
+                            x-text="char"></button>
+                    </template>
                 </div>
             </div>
         </header>
@@ -56,45 +93,82 @@
         <main class="relative z-10 px-6 pb-40" x-show="filteredCafes().length > 0">
             <div class="grid grid-cols-2 gap-4">
                 <template x-for="(cafe, index) in filteredCafes()" :key="cafe.id">
-                    <a :href="cafe.url" class="group flex flex-col bg-white rounded-[28px] border border-slate-50 shadow-soft hover:shadow-premium transition-all duration-500 animate-up no-underline overflow-hidden" :style="'animation-delay: ' + (index * 0.05) + 's'">
-                        {{-- Image with Aspect Video --}}
-                        <div class="relative aspect-video shrink-0 overflow-hidden">
-                            <img :src="cafe.image || 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800'"
-                                onerror="this.src='https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800'"
-                                :alt="cafe.name" class="w-full h-full object-cover aspect-square transition-transform duration-500 group-hover:scale-110" loading="lazy">
-                            
-                            {{-- Status Badge (Top Left) --}}
-                            <div class="absolute top-2 left-2 z-10">
-                                <span class="px-2.5 py-1 rounded-lg text-[0.55rem] font-black uppercase text-white tracking-widest backdrop-blur-md"
-                                    :class="cafe.isOpen ? 'bg-emerald-500/60' : 'bg-black/60 shadow-xl'"
+                    <div class="group flex flex-col bg-white rounded-[28px] border border-slate-50 shadow-soft hover:shadow-premium transition-all duration-500 animate-up overflow-hidden"
+                        :style="'animation-delay: ' + (index * 0.05) + 's'" x-data="{ currentImg: 0 }">
+
+                        {{-- Image Gallery Section --}}
+                        <div class="relative w-full aspect-square shrink-0 overflow-hidden bg-slate-50 rounded-[32px]">
+                            {{-- Swipe Container --}}
+                            <div class="flex h-full w-full overflow-x-auto snap-x snap-mandatory no-scrollbar overflow-y-hidden"
+                                data-no-swipe
+                                @scroll.debounce.100ms="currentImg = Math.round($el.scrollLeft / $el.offsetWidth)">
+                                <template x-for="(img, i) in cafe.images" :key="i">
+                                    <div class="w-full h-full flex-shrink-0 snap-start relative">
+                                        <a :href="cafe.url" class="absolute inset-0 z-10"></a>
+                                        <img :src="img"
+                                            onerror="this.src='https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800'"
+                                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            loading="lazy">
+                                    </div>
+                                </template>
+                            </div>
+
+                            {{-- Gallery Navigation Dots --}}
+                            <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-20 pointer-events-none"
+                                x-show="cafe.images.length > 1">
+                                <template x-for="(img, i) in cafe.images" :key="i">
+                                    <div class="h-1 rounded-full transition-all duration-300 shadow-sm"
+                                        :class="currentImg === i ? 'w-4 bg-white' : 'w-1 bg-white/40'"></div>
+                                </template>
+                            </div>
+
+                            {{-- Status Badge (Top Right) --}}
+                            <div class="absolute top-3.5 right-3.5 z-20">
+                                <span
+                                    class="px-3 py-1.5 rounded-xl text-[0.62rem] font-bold uppercase text-white tracking-widest backdrop-blur-md shadow-lg"
+                                    :class="cafe.isOpen ? 'bg-emerald-500/80' : 'bg-black/40'"
                                     x-text="cafe.isOpen ? 'OPEN' : 'TUTUP'">
                                 </span>
                             </div>
                         </div>
 
                         {{-- Info Area --}}
-                        <div class="p-3.5 flex flex-col flex-1">
-                            <h3 class="font-black text-[--color-espresso] text-[0.85rem] font-display mb-1 truncate group-hover:text-[--color-amber] transition-colors leading-tight" x-text="cafe.name"></h3>
-                            <p class="text-slate-400 text-[0.6rem] font-bold line-clamp-1 mb-2 uppercase tracking-tighter" x-text="cafe.address"></p>
-
-                            {{-- Feature Badges --}}
-                            <div class="flex flex-wrap gap-1 mb-3" x-show="cafe.facilities && cafe.facilities.length > 0">
-                                <template x-for="facility in (cafe.facilities || []).slice(0, 2)" :key="facility">
-                                    <span class="px-1.5 py-0.5 bg-slate-50 text-slate-500 rounded text-[0.5rem] font-bold uppercase tracking-tight" x-text="facility"></span>
-                                </template>
+                        <a :href="cafe.url" class="flex flex-col flex-1 no-underline p-3">
+                            <div class="mb-3">
+                                <h3 class="font-black text-[--color-espresso] text-[0.85rem] font-display mb-0.5 truncate group-hover:text-[--color-amber] transition-colors leading-tight"
+                                    x-text="cafe.name"></h3>
+                                <p class="text-slate-400 text-[0.6rem] font-medium line-clamp-1 tracking-tight"
+                                    x-text="cafe.address"></p>
                             </div>
 
-                            <div class="mt-auto flex items-center justify-between">
-                                <div class="flex items-center gap-1">
-                                    <i class="ph-fill ph-bolt text-[--color-amber] text-[0.6rem]"></i>
-                                    <span class="font-black text-[--color-espresso] text-[0.65rem]" x-text="formatNumber(cafe.energy || 0)"></span>
+                            <div class="mt-auto">
+                                {{-- Feature Badges --}}
+                                <div class="flex flex-wrap gap-1 mb-4 h-6 items-center overflow-hidden"
+                                    x-show="cafe.facilities && cafe.facilities.length > 0">
+                                    <template x-for="facility in (cafe.facilities || []).slice(0, 2)" :key="facility">
+                                        <span
+                                            class="px-2.5 py-1 bg-slate-50 text-slate-400 rounded-lg text-[0.52rem] font-bold whitespace-nowrap"
+                                            x-text="facility"></span>
+                                    </template>
                                 </div>
-                                <template x-if="userLat && activeFilter === 'terdekat'">
-                                    <span class="font-black text-indigo-500 text-[0.55rem] tracking-tighter" x-text="formatDistance(getDistance(cafe.lat, cafe.lng))"></span>
-                                </template>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-5 h-5 rounded-full bg-amber-50 flex items-center justify-center">
+                                            <i class="ph-fill ph-bolt text-[--color-amber] text-[0.65rem]"></i>
+                                        </div>
+                                        <span class="font-black text-[--color-espresso] text-[0.68rem]"
+                                            x-text="formatNumber(cafe.energy || 0)"></span>
+                                    </div>
+                                    <template x-if="userLat && activeFilter === 'terdekat'">
+                                        <span
+                                            class="font-bold text-indigo-500 text-[0.58rem] tracking-tight bg-indigo-50 px-1.5 py-0.5 rounded-md"
+                                            x-text="formatDistance(getDistance(cafe.lat, cafe.lng))"></span>
+                                    </template>
+                                </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </template>
             </div>
         </main>
@@ -115,21 +189,27 @@
 @push('scripts')
     <script>
         window.cafesData = {!! $cafes->map(fn($c) => [
-        'id' => $c->id,
-        'name' => $c->name,
-        'address' => $c->address,
-        'energy' => $c->total_energy,
-        'isOpen' => $c->is_open,
-        'lat' => $c->latitude,
-        'lng' => $c->longitude,
-        'facilities' => $c->facilities->pluck('name'),
-        'image' => (function($path) {
-            if (!$path) return null;
-            if (str_starts_with($path, 'http')) return $path;
-            return \Illuminate\Support\Facades\Storage::disk('public')->exists($path) 
-                ? \Illuminate\Support\Facades\Storage::url($path) 
-                : null;
-        })($c->image_path),
+        'id' => data_get($c, 'id'),
+        'name' => data_get($c, 'name'),
+        'address' => data_get($c, 'address'),
+        'energy' => data_get($c, 'total_energy'),
+        'isOpen' => data_get($c, 'is_open', false),
+        'lat' => data_get($c, 'latitude'),
+        'lng' => data_get($c, 'longitude'),
+        'facilities' => data_get($c, 'facilities.*.name', []),
+        'images' => (function ($cafe) {
+            $mainImg = data_get($cafe, 'image_path');
+            $gallery = data_get($cafe, 'images', []);
+            $all = collect([$mainImg])->merge($gallery)->filter()->unique()->values();
+
+            return $all->map(function ($path) {
+                if ($path && str_starts_with($path, 'http'))
+                    return $path;
+                return ($path && \Illuminate\Support\Facades\Storage::disk('public')->exists($path))
+                    ? \Illuminate\Support\Facades\Storage::url($path)
+                    : 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&q=80&w=800';
+            })->all();
+        })($c),
         'url' => route('cafes.show', $c)
     ])->toJson() !!};
 
@@ -137,7 +217,7 @@
             Alpine.data('exploreLogic', () => ({
                 search: '',
                 activeFilter: 'semua',
-                sortAz: false,
+                selectedLetters: [],
                 cafes: [],
                 userLat: null,
                 userLng: null,
@@ -145,6 +225,14 @@
 
                 initComponent() {
                     this.cafes = window.cafesData || [];
+                },
+
+                toggleLetter(char) {
+                    if (this.selectedLetters.includes(char)) {
+                        this.selectedLetters = this.selectedLetters.filter(l => l !== char);
+                    } else {
+                        this.selectedLetters = [...this.selectedLetters, char];
+                    }
                 },
 
                 getLocation() {
@@ -166,10 +254,10 @@
                             this.activeFilter = 'semua';
                             alert('Gagal mengambil lokasi. Pastikan GPS aktif ya!');
                         }, {
-                            enableHighAccuracy: true,
-                            timeout: 5000,
-                            maximumAge: 0
-                        }
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
                     );
                 },
 
@@ -196,6 +284,7 @@
                 filteredCafes() {
                     let results = [...this.cafes];
 
+                    // 1. Search Filter
                     if (this.search) {
                         const s = this.search.toLowerCase();
                         results = results.filter(c =>
@@ -204,19 +293,27 @@
                         );
                     }
 
+                    // 2. Letter Filter (Multi-select starts width)
+                    if (this.selectedLetters.length > 0) {
+                        results = results.filter(c =>
+                            this.selectedLetters.some(l => c.name.trim().toUpperCase().startsWith(l))
+                        );
+                    }
+
+                    // 3. Category Filters
                     if (this.activeFilter === 'buka') {
                         results = results.filter(c => c.isOpen);
                     }
 
+                    // 4. Distance Filter & Sort
                     if (this.activeFilter === 'terdekat' && this.userLat) {
                         results.forEach(c => {
                             c.distance = this.getDistance(c.lat, c.lng);
                         });
                         results = results.filter(c => c.distance !== null);
                         results.sort((a, b) => a.distance - b.distance);
-                    }
-
-                    if (this.sortAz) {
+                    } else if (this.activeFilter === 'az' || this.selectedLetters.length > 0) {
+                        // 5. Default A-Z Sort if requested or letter selected
                         results.sort((a, b) => a.name.localeCompare(b.name));
                     }
 
